@@ -36,5 +36,10 @@ jobs:
           git checkout main
           git rebase upstream/main
 
-      - name: Push rebased main
-        run: git push --force-with-lease origin main
+      - name: Push rebased main (prefer SYNC_PAT)
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+        run: |
+          TOKEN="${SYNC_PAT:-$GITHUB_TOKEN}"
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force-with-lease origin main
